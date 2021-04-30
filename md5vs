@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Released into the public domain
+# V1.0 - 4/31/2021
+
+ver=1.0
+bsd=$(command -v md5)
+gnu=$(command -v md5sum)
+if [ ! -z "$gnu" ]; then
+    prog=md5sum
+elif [ ! -z "bsd" ]; then
+    prog=md5
+else
+    echo "Can't find md5sum or md5 in $PATH, aborting!"
+    exit 1
+fi
+
+echo "MD5VerificationSystem By Alex Free v$ver"
+if [ "$#" -ne 2 ]; then
+    printf "\nMD5VS requires at least 2 arguments. Usage:\n\nmd5vs -c /some/diretory  Create verification file that contains all files in /some/directory\n\nmd5vs -v /some/directory  Verify all files in /some/directory using the verification file created previously with md5vs -c\n"
+    exit 1
+fi
+
+if [ ! -d "$2" ]; then
+    echo "Error, Can not find the directory: \"""$2""\""
+    exit 1
+fi
+
+if [ "$1" == "-c" ]; then
+    cd "$2"
+    if [ -f "md5sum.txt" ]; then
+        read -p "Warning: a md5sum.txt file already exists in \"""$2""\", is it ok to overwrite it with a new one? (Y/n): " -n 1 -r
+echo
+        if [ ! $REPLY = "y" ]; then
+            if [ ! $REPLY = "Y" ]; then
+                exit 1
+            fi
+        fi
+    fi
+    echo "Writing md5sums, please wait..."
+    vfile=$(find . -type f ! -name 'md5sum.txt' | tr \\n \\0 | xargs -0 $prog)
+    echo "$vfile" > md5sum.txt
+    nof=$(cat md5sum.txt | wc -l)
+    printf "Wrote $nof cheksum(s) to the file: \"""$2/md5sum.txt""\", to verify the files in \"""$2""\" use the command:\nmd5vs -v \"""$2""\""
+    echo 
+elif [ "$1" == "-v" ]; then
+    cd "$2"
+    if [ ! -e "md5sum.txt" ]; then
+        echo "Error, Can not find the md5sum.txt file in the directory: \"""$2""\""
+        exit 1    
+    fi
+    echo "Checking md5sums, please wait..."
+    if [ $prog == "md5sum" ]; then
+        $prog -c md5sum.txt
+    elif [ $prog == "md5" ]; then
+        vfile=$(find . -type f ! -name 'md5sum.txt' | tr \\n \\0 | xargs -0 $prog)
+        compare=$(diff -w -B <(echo "$vfile") <(cat md5sum.txt))
+        if [ -z "$compare" ]; then
+            echo "All files verified correctly"
+        else
+            printf "Not all files verified!:\n $compare"
+            exit 1
+        fi
+    fi
+    nof=$(cat md5sum.txt | wc -l)
+    echo "$nof file(s) in \"""$2""\" have been checked against the file: \"""$2/md5sum.txt""\""
+fi
+
