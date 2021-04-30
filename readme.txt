@@ -14,6 +14,6 @@ Use the command:
 
 ./md5vs -v "/path/to/some/directory"
 
-This will verify that the md5sums in all of the files within "/path/to/some/directory" recursively match what was previously recorded in the file "/path/to/some/directory/md5sum.txt" with the previous command: ./md5sum -c "/path/to/some/directory"
+This will verify that the md5sums in all of the files within "/path/to/some/directory" recursively match what was previously recorded in the file "/path/to/some/directory/md5sum.txt" with the previous command: ./md5vs -c "/path/to/some/directory"
 
 MD5VS is released into the public domain, see the file 'unlicense.txt'.
