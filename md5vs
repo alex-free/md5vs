@@ -8,7 +8,7 @@ bsd=$(command -v md5)
 gnu=$(command -v md5sum)
 if [ ! -z "$gnu" ]; then
     prog=md5sum
-elif [ ! -z "bsd" ]; then
+elif [ ! -z "$bsd" ]; then
     prog=md5
 else
     echo "Can't find md5sum or md5 in $PATH, aborting!"
