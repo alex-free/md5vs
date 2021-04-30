@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Released into the public domain
-# V1.0 - 4/31/2021
+# V1.0 - 4/30/2021
 
 ver=1.0
 bsd=$(command -v md5)
